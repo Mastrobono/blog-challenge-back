@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  // "prisma-client-js" (not "prisma-client"): the latter emits ESM/TypeScript
+  // to a custom path and does not populate `@prisma/client`, which is what
+  // `import { PrismaClient } from '@prisma/client'` resolves to. Using it broke
+  // the build with "has no exported member 'PrismaClient'".
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Model for user-created posts ("related posts")
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  title     String   @db.VarChar(100)
+  imageUrl  String   @db.VarChar(255) // URL to the uploaded S3 image
+  
+  // NEW FIELDS for consistency with external API structure:
+  topic     String?  @db.VarChar(50) 
+  readTime  Int?     // Time in minutes
+}
