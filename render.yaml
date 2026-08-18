@@ -2,7 +2,11 @@ services:
   - type: web
     name: nestjs-api
     env: node
-    buildCommand: npm ci && npm run build && npx prisma migrate deploy --schema=./prisma/schema.prisma
+    # --include=dev is required: NODE_ENV=production makes npm omit
+    # devDependencies, and both the Nest CLI and the Prisma CLI live there, so a
+    # plain `npm ci` fails the build with "sh: 1: nest: not found". They are only
+    # needed to compile; the runtime uses `dependencies` alone.
+    buildCommand: npm ci --include=dev && npm run build && npx prisma migrate deploy --schema=./prisma/schema.prisma
     startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
